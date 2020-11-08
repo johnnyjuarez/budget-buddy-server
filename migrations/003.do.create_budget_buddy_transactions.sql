@@ -1,6 +1,7 @@
 CREATE TABLE budget_buddy_transactions (
   id SERIAL PRIMARY KEY,
   type TEXT NOT NULL,
+  amount INTEGER NOT NULL,
   date_added TIMESTAMPTZ DEFAULT now() NOT NULL,
   description TEXT,
   account_id INTEGER 
