@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 const authRouter = require('./auth/auth-router');
 const accountsRouter = require('./accounts/accounts-router');
+const transactionsRouter = require('./transactions/transactions-router');
 
 // describe app to use express
 const app = express();
@@ -21,6 +22,7 @@ app.use(cors());
 // routes
 app.use('/api/auth', authRouter);
 app.use('/api/accounts', accountsRouter);
+app.use('/api/transactions', transactionsRouter);
 
 
 app.use(function errorHandler(error, req, res, next) {
