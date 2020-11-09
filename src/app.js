@@ -7,12 +7,13 @@ const { NODE_ENV } = require('./config');
 const authRouter = require('./auth/auth-router');
 const accountsRouter = require('./accounts/accounts-router');
 const transactionsRouter = require('./transactions/transactions-router');
+const usersRouter = require('./users/users-router');
 
 // describe app to use express
 const app = express();
 
 // set morgan option based on node environment
-const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
+const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 
 // set app options and basic security
 app.use(morgan(morganOption));
@@ -23,12 +24,12 @@ app.use(cors());
 app.use('/api/auth', authRouter);
 app.use('/api/accounts', accountsRouter);
 app.use('/api/transactions', transactionsRouter);
-
+app.use('/api/users', usersRouter);
 
 app.use(function errorHandler(error, req, res, next) {
   let response;
   if (NODE_ENV === 'production') {
-    response = { error : {mesage : 'server error'}};
+    response = { error: { mesage: 'server error' } };
   } else {
     console.error(error);
     response = { message: error.message, error };

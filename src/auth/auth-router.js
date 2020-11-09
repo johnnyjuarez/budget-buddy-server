@@ -32,7 +32,11 @@ authRouter
               return res.status(400).json({
                 error: 'Incorrect password'
               });
-            res.send('post route for \'/login\'');
+            const sub = dbUser.email;
+            const payload = { email: dbUser.email };
+            res.send({
+              authToken: AuthServices.createJwt(sub, payload)
+            });
           });
       })
       .catch(next);
