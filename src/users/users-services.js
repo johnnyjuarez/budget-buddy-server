@@ -3,7 +3,7 @@ const xss = require('xss');
 const bcrypt = require('bcryptjs');
 
 const UsersService = {
-  validatePassword(password) {
+  getInvalidPasswordMessage(password) {
     if (password.length < 8) {
       return 'Password must be longer than 8 characters';
     }

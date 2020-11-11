@@ -27,12 +27,9 @@ app.use('/api/transactions', transactionsRouter);
 app.use('/api/users', usersRouter);
 
 app.use(function errorHandler(error, req, res, next) {
-  let response;
-  if (NODE_ENV === 'production') {
-    response = { error: { mesage: 'server error' } };
-  } else {
+  let response = { error: { message: error.message, error } };
+  if (NODE_ENV !== 'production') {
     console.error(error);
-    response = { message: error.message, error };
   }
   res.status(500).json(response);
 });

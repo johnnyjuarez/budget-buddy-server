@@ -7,35 +7,38 @@ const path = require('path');
 userRouter.post('/', jsonBodyParser, (req, res, next) => {
   const { email, password } = req.body;
 
-  for (const field of ['email', 'password'])
-    if (!req.body[field])
+  // field validation has values
+  for (const field of ['email', 'password']) {
+    if (!req.body[field]) {
       return res.status(400).json({
         error: `Missing ${field} in request body`,
       });
-  const passwordError = UsersService.validatePassword(password);
+    }
+  }
+
+  // password validation using services from UsersService
+  const passwordError = UsersService.getInvalidPasswordMessage(password);
   if (passwordError) return res.status(400).json({ error: passwordError });
 
   UsersService.hasUserWithEmail(req.app.get('db'), email)
     .then((hasUserWithEmail) => {
       if (hasUserWithEmail) {
         return res.status(400).json({ error: 'Email already in use' });
-      } else {
-        return UsersService.hashPassword(password).then((hashedPassword) => {
-          const newUser = {
-            email,
-            password: hashedPassword,
-          };
-          return UsersService.insertUser(req.app.get('db'), newUser).then(
-            (user) => {
-              res
-                .status(201)
-                .location(path.posix.join(req.originalUrl, `/${user.id}`))
-                .json(UsersService.serializeUser(user));
-            }
-          );
-        });
-        // create user in database
       }
+      return UsersService.hashPassword(password).then((hashedPassword) => {
+        const newUser = {
+          email,
+          password: hashedPassword,
+        };
+        return UsersService.insertUser(req.app.get('db'), newUser).then(
+          (user) => {
+            res
+              .status(201)
+              .location(path.posix.join(req.originalUrl, `/${user.id}`))
+              .json(UsersService.serializeUser(user));
+          }
+        );
+      });
     })
     .catch(next);
 });
