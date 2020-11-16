@@ -1,15 +1,18 @@
 const express = require('express');
-const { requireAuth } = require('../middleware/basic-auth');
+const requireAuth = require('../middleware/jwt-auth');
 const TransactionsServices = require('./transactions-services');
 const path = require('path');
+const AccountsServices = require('../accounts/accounts-services');
 
 const transactionsRouter = express.Router();
 const jsonBodyParser = express.json();
 
 transactionsRouter
   .route('/:account_id')
-  // .all(requireAuth)
+  .all(requireAuth)
+  .all(checkAccountExists)
   .get((req, res, next) => {
+    console.log(req.user);
     const accountId = req.params.account_id;
     console.log(accountId);
     TransactionsServices.getAccountTransactions(
@@ -35,8 +38,18 @@ transactionsRouter
         error: `${amount} is not a number`,
       });
     }
+    let transaction = null;
     TransactionsServices.insertTransaction(req.app.get('db'), transactionInfo)
-      .then((transaction) => {
+      .then((_transaction) => {
+        transaction = _transaction;
+        return TransactionsServices.processTransaction(
+          req.app.get('db'),
+          account_id,
+          amount,
+          type
+        );
+      })
+      .then(() => {
         res
           .status(201)
           .location(path.posix.join(req.originalUrl, `/${transaction.id}`))
@@ -44,5 +57,25 @@ transactionsRouter
       })
       .catch(next);
   });
+
+async function checkAccountExists(req, res, next) {
+  try {
+    const account = await AccountsServices.getAccountById(
+      req.app.get('db'),
+      req.params.account_id,
+      req.user.id
+    );
+
+    if (!account)
+      return res.status(404).json({
+        error: `Account doesn't exist`,
+      });
+
+    res.account = account;
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
 
 module.exports = transactionsRouter;

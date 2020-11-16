@@ -13,6 +13,7 @@ const TransactionServices = {
         'transaction.account_id'
       )
       .where('transaction.account_id', accountId);
+    // });
   },
   insertTransaction(db, newTransaction) {
     return db
@@ -29,6 +30,20 @@ const TransactionServices = {
       description: xss(transaction.description),
       account: transaction.account_id,
     };
+  },
+  processTransaction(db, accountId, amount, type) {
+    if (type === 'decrease') {
+      return db
+        .from('budget_buddy_accounts')
+        .where('id', accountId)
+        .decrement('account_total', amount);
+    }
+    if (type === 'increase') {
+      return db
+        .from('budget_buddy_accounts')
+        .where('id', accountId)
+        .increment('account_total', amount);
+    }
   },
 };
 

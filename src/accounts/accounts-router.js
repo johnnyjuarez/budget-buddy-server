@@ -1,6 +1,5 @@
-const { json } = require('express');
 const express = require('express');
-const { requireAuth } = require('../middleware/basic-auth');
+const requireAuth = require('../middleware/jwt-auth');
 const AccountsServices = require('./accounts-services');
 const accountsRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -8,7 +7,7 @@ const path = require('path');
 
 accountsRouter
   .route('/:user_id')
-  // .all(requireAuth)
+  .all(requireAuth)
   .get((req, res, next) => {
     const userId = req.params.user_id;
     AccountsServices.getUserAccounts(req.app.get('db'), userId).then(

@@ -27,7 +27,7 @@ authRouter.post('/login', jsonBodyParser, (req, res, next) => {
       ).then((compareMatch) => {
         if (!compareMatch)
           return res.status(400).json({
-            error: 'Incorrect password',
+            error: 'Incorrect email or password',
           });
         const sub = dbUser.email;
         const payload = { email: dbUser.email };

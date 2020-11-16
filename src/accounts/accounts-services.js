@@ -27,5 +27,12 @@ const AccountsServices = {
       user: account.user_id,
     };
   },
+  getAccountById(db, accountId, userId) {
+    return db
+      .select('*')
+      .from('budget_buddy_accounts')
+      .where({ id: accountId, user_id: userId })
+      .first();
+  },
 };
 module.exports = AccountsServices;
