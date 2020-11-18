@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS budget_buddy_accounts CASCADE;
