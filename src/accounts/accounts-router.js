@@ -6,10 +6,11 @@ const jsonBodyParser = express.json();
 const path = require('path');
 
 accountsRouter
-  .route('/:user_id')
+  .route('/')
   .all(requireAuth)
   .get((req, res, next) => {
-    const userId = req.params.user_id;
+    console.log(req.user);
+    const userId = req.user.id;
     AccountsServices.getUserAccounts(req.app.get('db'), userId).then(
       (accounts) => {
         res.json(accounts);
@@ -18,8 +19,7 @@ accountsRouter
   })
   .post(jsonBodyParser, (req, res, next) => {
     const { account_name, account_total } = req.body;
-
-    const user_id = req.params.user_id;
+    const user_id = req.user.id;
     const accountInfo = { account_name, account_total, user_id };
     for (const [key, value] of Object.entries(accountInfo)) {
       if (value === null) {
