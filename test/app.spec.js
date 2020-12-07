@@ -2,6 +2,7 @@ const app = require('../src/app');
 const knex = require('knex');
 const AuthServices = require('../src/auth/auth-services');
 const { hashPassword } = require('../src/users/users-services');
+const { expect } = require('chai');
 
 describe('App', () => {
   let db;
@@ -73,6 +74,14 @@ describe('App', () => {
         ]);
     });
     it('responds with 200 and all of the transactions associated with the account id', () => {
+      const testObj = {
+        id: 1,
+        amount: '20',
+        type: 'increase',
+        description: 'extra cash',
+        account_id: 1,
+        date_added: new Date().toISOString(),
+      };
       return supertest(app)
         .get('/api/transactions/1')
         .set(
@@ -81,16 +90,16 @@ describe('App', () => {
             email: 'test@test.com',
           })}`
         )
-        .expect(200, [
-          {
-            id: 1,
-            amount: '20',
-            type: 'increase',
-            description: 'extra cash',
-            account_id: 1,
-            date_added: new Date().toISOString(),
-          },
-        ]);
+        .expect((res) => {
+          const expected = new Date().toLocaleString();
+          const actual = new Date(res.body[0].date_added).toLocaleString();
+          expect(actual).to.eql(expected);
+          expect(res.body[0].id).to.eql(testObj.id);
+          expect(res.body[0].amount).to.eql(testObj.amount);
+          expect(res.body[0].type).to.eql(testObj.type);
+          expect(res.body[0].description).to.eql(testObj.description);
+          expect(res.body[0].account_id).to.eql(testObj.account_id);
+        });
     });
   });
 });
