@@ -12,20 +12,21 @@ This application was built using React, Node, PostgreSQL, and Express.
 
 ### Accounts Routes
 
-GET /api/accounts returns an array of accounts assigned to the unique user
+GET /api/accounts - Returns an array of accounts(objects), with key value of account names, and account totals assigned to the unique user.
 
-POST /api/accounts allows to post an account name and initial total attached to the user id
+POST /api/accounts - Post an account with account name and account total.
 
 ### Auth Routes
 
-POST /api/login allows to user to login using email and password, password is compared to stored hashed password in DB, as well as the users email.
+POST /api/login - Post email and password credentials allow the user to login using email and password, password is compared to stored hashed password in DB, as well as the users email.
 
 ### Transaction Routes
 
-All routes for transactions require JWT authentication
-GET /api/transactions/:account_id returns an array of transactions attached to the account_id that have a valid user id
+All routes for transactions require JWT authentication.
 
-POST /api/transactions allow for DB insertion of amount, type, description from body, and is attached to account id.
+GET /api/transactions/:account_id - Returns an array of transactions attached to the account_id that have a valid user id.
+
+POST /api/transactions - Post a transaction linked to an account ID given by the params.
 
 ![](images/landing.png)
 ![](images/login.png)
